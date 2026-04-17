@@ -1,4 +1,4 @@
-package com.ledger.spring_ai_ledger;
+package com.ledger.token_ai_ledger;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,10 +11,10 @@ import com.ledger.springailedger.domain.member.MemberRepository;
 @SpringBootApplication(scanBasePackages = "com.ledger")
 @EntityScan(basePackageClasses = Member.class)
 @EnableJpaRepositories(basePackageClasses = MemberRepository.class)
-public class SpringAiLedgerApplication {
+public class TokenAiLedgerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringAiLedgerApplication.class, args);
+		SpringApplication.run(TokenAiLedgerApplication.class, args);
 	}
 
 }
