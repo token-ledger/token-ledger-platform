@@ -44,9 +44,9 @@ public class MemberService {
 	@Transactional(readOnly = true)
 	public MemberResponse getCurrentMember(Authentication authentication) {
 		if (authentication instanceof OAuth2AuthenticationToken oauthToken) {
-			OAuth2User principal = oauthToken.getPrincipal();
-			String email = principal.getAttribute("email");
-			return memberRepository.findByEmail(email)
+			String registrationId = oauthToken.getAuthorizedClientRegistrationId();
+			String providerId = oauthToken.getPrincipal().getName();
+			return memberRepository.findByProviderAndProviderId(registrationId, providerId)
 				.map(MemberResponse::from)
 				.orElseThrow(() -> new IllegalStateException("OAuth member not found"));
 		}
