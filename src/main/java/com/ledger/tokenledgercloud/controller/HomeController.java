@@ -1,12 +1,12 @@
-package com.ledger.springailedger.controller;
+package com.ledger.tokenledgercloud.controller;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.ledger.springailedger.dto.MemberResponse;
-import com.ledger.springailedger.service.MemberService;
+import com.ledger.tokenledgercloud.dto.MemberResponse;
+import com.ledger.tokenledgercloud.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
 

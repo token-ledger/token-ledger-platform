@@ -1,4 +1,4 @@
-package com.ledger.springailedger.service;
+package com.ledger.tokenledgercloud.service;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -9,11 +9,11 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ledger.springailedger.domain.member.Member;
-import com.ledger.springailedger.domain.member.MemberRepository;
-import com.ledger.springailedger.domain.member.Role;
-import com.ledger.springailedger.dto.MemberResponse;
-import com.ledger.springailedger.dto.MemberSignupRequest;
+import com.ledger.tokenledgercloud.domain.member.Member;
+import com.ledger.tokenledgercloud.domain.member.MemberRepository;
+import com.ledger.tokenledgercloud.domain.member.Role;
+import com.ledger.tokenledgercloud.dto.MemberResponse;
+import com.ledger.tokenledgercloud.dto.MemberSignupRequest;
 
 import lombok.RequiredArgsConstructor;
 

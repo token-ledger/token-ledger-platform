@@ -1,10 +1,10 @@
-package com.ledger.token_ai_ledger;
+package com.ledger.tokenledgercloud;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TokenAiLedgerApplicationTests {
+class TokenLedgerCloudApplicationTests {
 
 	@Test
 	void contextLoads() {

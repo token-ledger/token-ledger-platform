@@ -1,4 +1,4 @@
-package com.ledger.springailedger.controller;
+package com.ledger.tokenledgercloud.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ledger.springailedger.dto.MemberResponse;
-import com.ledger.springailedger.dto.MemberSignupRequest;
-import com.ledger.springailedger.service.MemberService;
+import com.ledger.tokenledgercloud.dto.MemberResponse;
+import com.ledger.tokenledgercloud.dto.MemberSignupRequest;
+import com.ledger.tokenledgercloud.service.MemberService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

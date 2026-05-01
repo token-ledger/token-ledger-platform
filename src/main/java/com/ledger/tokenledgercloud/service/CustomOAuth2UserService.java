@@ -1,4 +1,4 @@
-package com.ledger.springailedger.service;
+package com.ledger.tokenledgercloud.service;
 
 import java.util.Collections;
 import java.util.Map;
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.ledger.springailedger.domain.member.Member;
-import com.ledger.springailedger.domain.member.MemberRepository;
-import com.ledger.springailedger.domain.member.Role;
+import com.ledger.tokenledgercloud.domain.member.Member;
+import com.ledger.tokenledgercloud.domain.member.MemberRepository;
+import com.ledger.tokenledgercloud.domain.member.Role;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +29,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 	@Override
 	@Transactional
+	@SuppressWarnings("unchecked")
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 		OAuth2User oauth2User;
 		try {
@@ -65,19 +66,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		log.info("[OAuth2] registrationId={}, providerId={}, displayName={}", registrationId, providerId, displayName);
 
 		try {
-		memberRepository.findByProviderAndProviderId(registrationId, providerId)
-			.map(existing -> {
-				existing.setName(displayName);
-				return memberRepository.save(existing);
-			})
-			.orElseGet(() -> memberRepository.save(Member.builder()
-				.email(email)
-				.name(displayName)
-				.password(null)
-				.role(Role.USER)
-				.provider(registrationId)
-				.providerId(providerId)
-				.build()));
+			memberRepository.findByProviderAndProviderId(registrationId, providerId)
+				.map(existing -> {
+					existing.setName(displayName);
+					return memberRepository.save(existing);
+				})
+				.orElseGet(() -> memberRepository.save(Member.builder()
+					.email(email)
+					.name(displayName)
+					.password(null)
+					.role(Role.USER)
+					.provider(registrationId)
+					.providerId(providerId)
+					.build()));
 		} catch (Exception e) {
 			log.error("[OAuth2] 멤버 저장 실패: {}", e.getMessage(), e);
 			throw e;

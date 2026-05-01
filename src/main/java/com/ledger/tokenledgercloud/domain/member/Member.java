@@ -1,4 +1,4 @@
-package com.ledger.springailedger.domain.member;
+package com.ledger.tokenledgercloud.domain.member;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,7 +40,7 @@ public class Member {
 	@Column(nullable = false)
 	private Role role;
 
-	/** e.g. google, local */
+	/** e.g. google, kakao, local */
 	@Column(nullable = false)
 	private String provider;
 

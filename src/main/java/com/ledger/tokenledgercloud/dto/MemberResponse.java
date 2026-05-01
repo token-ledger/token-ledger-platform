@@ -1,6 +1,6 @@
-package com.ledger.springailedger.dto;
+package com.ledger.tokenledgercloud.dto;
 
-import com.ledger.springailedger.domain.member.Member;
+import com.ledger.tokenledgercloud.domain.member.Member;
 
 public record MemberResponse(Long id, String email, String name, String role, String provider) {
 
