@@ -2,10 +2,148 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta charset="UTF-8"/>
-	<title>Token-AI Ledger</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>홈 · Token Ledger</title>
+	<style>
+		* { box-sizing: border-box; }
+
+		html, body {
+			margin: 0;
+			padding: 0;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo",
+				"Pretendard", Roboto, "Helvetica Neue", Arial, sans-serif;
+			background: #f7f7f8;
+			color: #111827;
+			-webkit-font-smoothing: antialiased;
+		}
+
+		.topbar {
+			height: 56px;
+			border-bottom: 1px solid #e5e7eb;
+			background: #fff;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 0 24px;
+		}
+
+		.brand {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			font-weight: 700;
+			font-size: 15px;
+		}
+
+		.brand .logo {
+			width: 28px;
+			height: 28px;
+			background: #111827;
+			border-radius: 8px;
+			color: #fff;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: 700;
+			font-size: 13px;
+		}
+
+		.user {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			font-size: 14px;
+			color: #374151;
+		}
+
+		.user .avatar {
+			width: 28px;
+			height: 28px;
+			border-radius: 50%;
+			background: #e5e7eb;
+			color: #374151;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: 600;
+			font-size: 13px;
+		}
+
+		.btn-logout {
+			background: transparent;
+			border: 1px solid #e5e7eb;
+			color: #374151;
+			padding: 7px 12px;
+			border-radius: 8px;
+			font-size: 13px;
+			font-weight: 500;
+			cursor: pointer;
+		}
+		.btn-logout:hover { background: #f3f4f6; }
+
+		.container {
+			max-width: 720px;
+			margin: 48px auto;
+			padding: 0 24px;
+		}
+
+		h1 {
+			margin: 0 0 6px;
+			font-size: 28px;
+			letter-spacing: -0.3px;
+		}
+
+		.subtitle {
+			margin: 0 0 24px;
+			color: #6b7280;
+			font-size: 14px;
+		}
+
+		.card {
+			background: #fff;
+			border: 1px solid #e5e7eb;
+			border-radius: 12px;
+			padding: 20px 24px;
+		}
+
+		.row {
+			display: flex;
+			justify-content: space-between;
+			padding: 8px 0;
+			font-size: 14px;
+		}
+
+		.row + .row { border-top: 1px solid #f3f4f6; }
+
+		.row .key { color: #6b7280; }
+		.row .val { color: #111827; font-weight: 500; }
+	</style>
 </head>
 <body>
-<h1 th:text="|환영합니다, ${memberName}님!|">환영합니다</h1>
-<p>메인 페이지입니다.</p>
+<header class="topbar">
+	<div class="brand">
+		<div class="logo">T</div>
+		<span>Token Ledger</span>
+	</div>
+	<div class="user">
+		<div class="avatar" th:text="${#strings.substring(member.name(), 0, 1)}">U</div>
+		<span th:text="${member.name()}">사용자</span>
+		<form th:action="@{/logout}" method="post" style="margin: 0;">
+			<button type="submit" class="btn-logout">로그아웃</button>
+		</form>
+	</div>
+</header>
+
+<main class="container">
+	<h1 th:text="|환영합니다, ${member.name()}님|">환영합니다</h1>
+	<p class="subtitle">Token Ledger 대시보드입니다.</p>
+
+	<div class="card">
+		<div class="row"><span class="key">이름</span><span class="val" th:text="${member.name()}">-</span></div>
+		<div class="row"><span class="key">이메일</span><span class="val" th:text="${member.email() ?: '연결된 이메일 없음'}">-</span></div>
+		<div class="row"><span class="key">로그인 방식</span><span class="val" th:text="${member.provider()}">-</span></div>
+		<div class="row"><span class="key">권한</span><span class="val" th:text="${member.role()}">-</span></div>
+	</div>
+</main>
 </body>
 </html>
