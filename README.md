@@ -1,7 +1,7 @@
 # Spring AI Ledger
 ---
 ## Demo
-- 🌐 Frontend: https://token-ledger-platform.vercel.app  
+- 🌐 Frontend: https://token-ledger-frontend.vercel.app
 - ⚙️ Backend API: http://52.78.69.13:8080  
 ---
 ## Architecture
