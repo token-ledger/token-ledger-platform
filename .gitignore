@@ -1,0 +1,16 @@
+.idea/
+
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env*
+
+# Backend
+.gradle/
+build/
+out/
+
+# OS/editor
+.DS_Store
+*.iml
