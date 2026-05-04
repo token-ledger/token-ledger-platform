@@ -8,18 +8,34 @@ type Kpi = {
   blockedRequests: number
 }
 
+type ModelCost = {
+  modelId: string
+  totalCost: number | string
+  totalTokens: number
+}
+
 export default function Home() {
   const [kpi, setKpi] = useState<Kpi | null>(null)
+  const [modelCosts, setModelCosts] = useState<ModelCost[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/kpi')
-      .then(res => res.json())
-      .then(data => setKpi(data))
+    Promise.all([
+      fetch('/api/kpi').then(res => res.json()),
+      fetch('/api/model-cost-summary').then(res => res.json()),
+    ])
+      .then(([kpiData, modelData]) => {
+        setKpi(kpiData)
+        setModelCosts(modelData)
+      })
+      .finally(() => setLoading(false))
   }, [])
 
   const totalCost = Number(kpi?.totalCost ?? 0)
   const totalTokens = Number(kpi?.totalTokens ?? 0)
   const blockedRequests = Number(kpi?.blockedRequests ?? 0)
+
+  const maxCost = Math.max(...modelCosts.map(m => Number(m.totalCost)), 0.001)
 
   return (
     <main className="min-h-screen bg-slate-900 text-slate-200 p-4 md:p-6 lg:p-8">
@@ -42,12 +58,8 @@ export default function Home() {
             placeholder="테넌트, 모델, 알림 검색..."
             className="w-full md:w-64 bg-slate-900 border border-slate-700 text-sm rounded-lg px-4 py-2 focus:outline-none focus:border-emerald-500"
           />
-          <button className="p-2 bg-slate-900 border border-slate-700 rounded-lg hover:bg-slate-700">
-            🔔
-          </button>
-          <button className="p-2 bg-slate-900 border border-slate-700 rounded-lg hover:bg-slate-700">
-            ⚙️
-          </button>
+          <button className="p-2 bg-slate-900 border border-slate-700 rounded-lg hover:bg-slate-700">🔔</button>
+          <button className="p-2 bg-slate-900 border border-slate-700 rounded-lg hover:bg-slate-700">⚙️</button>
         </div>
       </nav>
 
@@ -60,73 +72,53 @@ export default function Home() {
         </div>
 
         <div className="flex bg-slate-800 border border-slate-700 rounded-lg p-1 shadow-sm">
-          <button className="px-4 py-1.5 text-xs font-medium rounded-md text-slate-400">
-            오늘
-          </button>
-          <button className="px-4 py-1.5 text-xs font-medium rounded-md bg-emerald-500/20 text-emerald-400">
-            이번 주
-          </button>
-          <button className="px-4 py-1.5 text-xs font-medium rounded-md text-slate-400">
-            이번 달
-          </button>
+          <button className="px-4 py-1.5 text-xs font-medium rounded-md text-slate-400">오늘</button>
+          <button className="px-4 py-1.5 text-xs font-medium rounded-md bg-emerald-500/20 text-emerald-400">이번 주</button>
+          <button className="px-4 py-1.5 text-xs font-medium rounded-md text-slate-400">이번 달</button>
         </div>
       </section>
 
-      {!kpi ? (
+      {loading || !kpi ? (
         <div className="rounded-xl border border-slate-700 bg-slate-800 p-8 text-slate-400">
           로딩중...
         </div>
       ) : (
         <>
           <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <KpiCard
-              title="총 발생 비용 (USD)"
-              value={`$${totalCost.toFixed(8)}`}
-              icon="💰"
-              accent="emerald"
-              sub="RDS usage_logs 기준"
-            />
-            <KpiCard
-              title="총 사용 토큰 (Tokens)"
-              value={totalTokens.toLocaleString()}
-              icon="🔢"
-              accent="blue"
-              sub="입력 + 출력 토큰 합산"
-            />
-            <KpiCard
-              title="차단된 요청 (Circuit Broken)"
-              value={`${blockedRequests} 건`}
-              icon="🛡️"
-              accent="rose"
-              sub="BLOCKED 상태 요청 수"
-            />
+            <KpiCard title="총 발생 비용 (USD)" value={`$${totalCost.toFixed(8)}`} icon="💰" accent="emerald" sub="RDS usage_logs 기준" />
+            <KpiCard title="총 사용 토큰 (Tokens)" value={totalTokens.toLocaleString()} icon="🔢" accent="blue" sub="입력 + 출력 토큰 합산" />
+            <KpiCard title="차단된 요청 (Circuit Broken)" value={`${blockedRequests} 건`} icon="🛡️" accent="rose" sub="BLOCKED 상태 요청 수" />
           </section>
 
           <section className="bg-slate-800 rounded-xl border border-slate-700 p-6 shadow-lg mb-8">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-bold text-white">AI 모델별 비용 발생 추이</h3>
+              <h3 className="text-lg font-bold text-white">AI 모델별 비용 발생 현황</h3>
               <div className="text-sm text-slate-400">projectId=1 / period=week</div>
             </div>
 
-            <div className="h-64 flex items-end gap-4 border-b border-slate-700 pl-2">
-              {[
-                { label: 'Mon', value: 20 },
-                { label: 'Tue', value: 35 },
-                { label: 'Wed', value: 45 },
-                { label: 'Thu', value: 30 },
-                { label: 'Fri', value: 70 },
-                { label: 'Sat', value: 50 },
-                { label: 'Sun', value: 85 },
-              ].map(item => (
-                <div key={item.label} className="flex-1 flex flex-col items-center gap-2">
-                  <div
-                    className="w-full max-w-14 rounded-t-md bg-emerald-500/80 hover:bg-emerald-400 transition"
-                    style={{ height: `${item.value * 2}px` }}
-                  />
-                  <span className="text-xs text-slate-500">{item.label}</span>
-                </div>
-              ))}
-            </div>
+            {modelCosts.length === 0 ? (
+              <div className="h-64 flex items-center justify-center text-slate-500">
+                모델별 데이터가 없습니다.
+              </div>
+            ) : (
+              <div className="h-64 flex items-end gap-4 border-b border-slate-700 pl-2">
+                {modelCosts.map(item => {
+                  const cost = Number(item.totalCost)
+                  const height = Math.max((cost / maxCost) * 210, 8)
+
+                  return (
+                    <div key={item.modelId} className="flex-1 flex flex-col items-center gap-2">
+                      <div
+                        title={`${item.modelId}: $${cost.toFixed(8)}`}
+                        className="w-full max-w-16 rounded-t-md bg-emerald-500/80 hover:bg-emerald-400 transition"
+                        style={{ height: `${height}px` }}
+                      />
+                      <span className="text-xs text-slate-500 text-center break-all">{item.modelId}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </section>
 
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -147,13 +139,25 @@ export default function Home() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700/50">
-                  <tr>
-                    <td className="px-5 py-4 text-slate-200">gpt-4o-mini</td>
-                    <td className="px-5 py-4 text-right text-emerald-400">
-                      ${totalCost.toFixed(8)}
-                    </td>
-                    <td className="px-5 py-4 text-right">{totalTokens.toLocaleString()}</td>
-                  </tr>
+                  {modelCosts.length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="px-5 py-8 text-center text-slate-500">
+                        데이터가 없습니다.
+                      </td>
+                    </tr>
+                  ) : (
+                    modelCosts.map(item => (
+                      <tr key={item.modelId} className="hover:bg-slate-700/30">
+                        <td className="px-5 py-4 text-slate-200">{item.modelId}</td>
+                        <td className="px-5 py-4 text-right text-emerald-400">
+                          ${Number(item.totalCost).toFixed(8)}
+                        </td>
+                        <td className="px-5 py-4 text-right">
+                          {Number(item.totalTokens).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -164,21 +168,9 @@ export default function Home() {
               </div>
 
               <div className="p-5 space-y-4">
-                <EventCard
-                  title="EC2 API 연결 완료"
-                  message="Vercel Proxy를 통해 Spring Boot API 응답을 수신했습니다."
-                  type="SUCCESS"
-                />
-                <EventCard
-                  title="RDS MySQL 조회 완료"
-                  message="usage_logs 테이블 기준 비용과 토큰 집계가 완료되었습니다."
-                  type="INFO"
-                />
-                <EventCard
-                  title="예산 차단 요청 없음"
-                  message="현재 BLOCKED 상태 요청은 발생하지 않았습니다."
-                  type="READY"
-                />
+                <EventCard title="EC2 API 연결 완료" message="Vercel Proxy를 통해 Spring Boot API 응답을 수신했습니다." type="SUCCESS" />
+                <EventCard title="RDS MySQL 조회 완료" message="usage_logs 테이블 기준 비용과 토큰 집계가 완료되었습니다." type="INFO" />
+                <EventCard title={blockedRequests > 0 ? '차단 요청 발생' : '예산 차단 요청 없음'} message={blockedRequests > 0 ? `${blockedRequests}건의 BLOCKED 요청이 집계되었습니다.` : '현재 BLOCKED 상태 요청은 발생하지 않았습니다.'} type="READY" />
               </div>
             </div>
           </section>
@@ -217,9 +209,7 @@ function KpiCard({
             {value}
           </h3>
         </div>
-        <div className="p-3 bg-slate-900 rounded-lg border border-slate-700 text-xl">
-          {icon}
-        </div>
+        <div className="p-3 bg-slate-900 rounded-lg border border-slate-700 text-xl">{icon}</div>
       </div>
       <div className="mt-4 text-sm text-slate-500">{sub}</div>
     </div>
