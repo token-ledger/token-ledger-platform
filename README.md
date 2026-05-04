@@ -1,10 +1,10 @@
-# 🐷 Spring AI Ledger Platform
+# Spring AI Ledger
 ---
-## 🚀 Demo
+## Demo
 - 🌐 Frontend: https://token-ledger-platform.vercel.app  
 - ⚙️ Backend API: http://52.78.69.13:8080  
 ---
-## 🧱 Architecture
+## Architecture
 
 Frontend (Next.js / Vercel)
 ↓ (API Proxy)
@@ -20,16 +20,16 @@ Database (AWS RDS MySQL)
 - 📦 usage log 기반 실시간 데이터 반영
 
 ---
-## 🔌 API
-### ✅ KPI 조회
+## API
+### KPI 조회
 
 GET /api/dashboard/kpi?projectId=1&period=week
 
-### 📊 모델 비용 요약
+### 모델 비용 요약
 
 GET /api/dashboard/model-cost-summary?projectId=1&period=week
 
-### 🏆 프로젝트 비용 랭킹
+### 프로젝트 비용 랭킹
 
 GET /api/dashboard/project-ranking?period=month
 
