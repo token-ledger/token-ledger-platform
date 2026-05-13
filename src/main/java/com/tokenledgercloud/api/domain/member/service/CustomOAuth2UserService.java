@@ -75,7 +75,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 				.orElseGet(() -> memberRepository.save(Member.builder()
 					.email(email)
 					.name(displayName)
-					.password(null)
+					.passwordHash(null)
 					.role(Role.USER)
 					.provider(registrationId)
 					.providerId(providerId)

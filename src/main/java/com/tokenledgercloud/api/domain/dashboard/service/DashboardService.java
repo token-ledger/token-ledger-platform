@@ -23,7 +23,7 @@ public class DashboardService {
 	private final UsageLogRepository usageLogRepository;
 
 	@Transactional(readOnly = true)
-	public DashboardKpiResponse getKpi(Long projectId, String period) {
+	public DashboardKpiResponse getKpi(String projectId, String period) {
 		TimeRange range = resolvePeriod(period);
 		var row = usageLogRepository.getKpi(projectId, range.from(), range.to());
 
@@ -35,7 +35,7 @@ public class DashboardService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ModelCostSummaryResponse> getModelCostSummary(Long projectId, String period) {
+	public List<ModelCostSummaryResponse> getModelCostSummary(String projectId, String period) {
 		TimeRange range = resolvePeriod(period);
 
 		return usageLogRepository.findModelCostSummary(projectId, range.from(), range.to())

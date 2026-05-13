@@ -3,6 +3,8 @@ spring:
   ai:
     openai:
       api-key: test-dummy-key-not-used-at-runtime
+  flyway:
+    enabled: false
   security:
     oauth2:
       client:

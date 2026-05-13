@@ -12,47 +12,47 @@ import com.tokenledgercloud.api.domain.usage.repository.projection.KpiProjection
 import com.tokenledgercloud.api.domain.usage.repository.projection.ModelCostSummaryProjection;
 import com.tokenledgercloud.api.domain.usage.repository.projection.ProjectCostRankingProjection;
 
-public interface UsageLogRepository extends JpaRepository<UsageLog, Long> {
+public interface UsageLogRepository extends JpaRepository<UsageLog, String> {
 
-	Optional<UsageLog> findByIdempotencyKey(String idempotencyKey);
+	Optional<UsageLog> findByProjectIdAndEnvironmentAndRequestId(String projectId, String environment, String requestId);
 
 	@Query("""
-	select coalesce(sum(u.totalCost), 0) as totalCost,
+	select coalesce(sum(u.totalCostUsd), 0) as totalCost,
 	       coalesce(sum(u.totalTokens), 0) as totalTokens,
-	       count(case when u.status = com.tokenledgercloud.api.domain.usage.entity.UsageStatus.BLOCKED then 1 end) as blockedRequests
+	       0 as blockedRequests
 	from UsageLog u
 	where (:projectId is null or u.projectId = :projectId)
-	  and u.startedAt >= :from
-	  and u.startedAt < :to
+	  and u.occurredAt >= :from
+	  and u.occurredAt < :to
     """)
-	KpiProjection getKpi(Long projectId, LocalDateTime from, LocalDateTime to);
+	KpiProjection getKpi(String projectId, LocalDateTime from, LocalDateTime to);
 
 	@Query("""
-		select u.modelId as modelId,
-		       coalesce(sum(u.totalCost), 0) as totalCost,
+		select u.model as modelId,
+		       coalesce(sum(u.totalCostUsd), 0) as totalCost,
 		       coalesce(sum(u.totalTokens), 0) as totalTokens
 		from UsageLog u
 		where (:projectId is null or u.projectId = :projectId)
-		  and u.startedAt >= :from
-		  and u.startedAt < :to
-		group by u.modelId
-		order by sum(u.totalCost) desc
+		  and u.occurredAt >= :from
+		  and u.occurredAt < :to
+		group by u.model
+		order by sum(u.totalCostUsd) desc
 	""")
 	List<ModelCostSummaryProjection> findModelCostSummary(
-		Long projectId,
+		String projectId,
 		LocalDateTime from,
 		LocalDateTime to
 	);
 
 	@Query("""
 		select u.projectId as projectId,
-		       coalesce(sum(u.totalCost), 0) as totalCost,
+		       coalesce(sum(u.totalCostUsd), 0) as totalCost,
 		       coalesce(sum(u.totalTokens), 0) as totalTokens
 		from UsageLog u
-		where u.startedAt >= :from
-		  and u.startedAt < :to
+		where u.occurredAt >= :from
+		  and u.occurredAt < :to
 		group by u.projectId
-		order by sum(u.totalCost) desc
+		order by sum(u.totalCostUsd) desc
 	""")
 	List<ProjectCostRankingProjection> findProjectCostRanking(
 		LocalDateTime from,

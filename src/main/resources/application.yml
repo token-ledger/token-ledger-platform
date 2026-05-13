@@ -55,6 +55,8 @@ spring:
   h2:
     console:
       enabled: true  # 웹 브라우저에서 DB를 볼 수 있게 해줍니다 (localhost:8080/h2-console)
+  flyway:
+    enabled: false
   jpa:
     hibernate:
       ddl-auto: update

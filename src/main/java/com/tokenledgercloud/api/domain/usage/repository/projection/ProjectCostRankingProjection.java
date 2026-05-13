@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public interface ProjectCostRankingProjection {
 
-	Long getProjectId();
+	String getProjectId();
 
 	BigDecimal getTotalCost();
 

@@ -2,7 +2,7 @@ package com.tokenledgercloud.api.domain.member.dto;
 
 import com.tokenledgercloud.api.domain.member.entity.Member;
 
-public record MemberResponse(Long id, String email, String name, String role, String provider) {
+public record MemberResponse(String id, String email, String name, String role, String provider) {
 
 	public static MemberResponse from(Member member) {
 		return new MemberResponse(

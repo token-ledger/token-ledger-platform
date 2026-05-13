@@ -4,45 +4,58 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.tokenledgercloud.api.domain.usage.entity.UsageLog;
-import com.tokenledgercloud.api.domain.usage.entity.UsageStatus;
 
 public record UsageLogResponse(
-	Long id,
-	String eventId,
-	String idempotencyKey,
-	Long projectId,
-	Long applicationId,
-	Long userId,
-	String modelId,
-	Long inputTokens,
-	Long outputTokens,
+	String id,
+	String organizationId,
+	String projectId,
+	String apiKeyId,
+	String environment,
+	String requestId,
+	String provider,
+	String model,
+	Long promptTokens,
+	Long completionTokens,
+	Long reasoningTokens,
+	Long cachedPromptTokens,
 	Long totalTokens,
-	BigDecimal totalCost,
-	String currencyCode,
-	UsageStatus status,
-	LocalDateTime startedAt,
-	LocalDateTime finishedAt,
-	Long latencyMs
+	BigDecimal promptCostUsd,
+	BigDecimal completionCostUsd,
+	BigDecimal reasoningCostUsd,
+	BigDecimal cachedPromptCostUsd,
+	BigDecimal totalCostUsd,
+	String pricingPlanId,
+	String pricingVersion,
+	String sourceType,
+	String metadataJson,
+	LocalDateTime occurredAt
 ) {
 
 	public static UsageLogResponse from(UsageLog log) {
 		return new UsageLogResponse(
 			log.getId(),
-			log.getEventId(),
-			log.getIdempotencyKey(),
+			log.getOrganizationId(),
 			log.getProjectId(),
-			log.getApplicationId(),
-			log.getUserId(),
-			log.getModelId(),
-			log.getInputTokens(),
-			log.getOutputTokens(),
+			log.getApiKeyId(),
+			log.getEnvironment(),
+			log.getRequestId(),
+			log.getProvider(),
+			log.getModel(),
+			log.getPromptTokens(),
+			log.getCompletionTokens(),
+			log.getReasoningTokens(),
+			log.getCachedPromptTokens(),
 			log.getTotalTokens(),
-			log.getTotalCost(),
-			log.getCurrencyCode(),
-			log.getStatus(),
-			log.getStartedAt(),
-			log.getFinishedAt(),
-			log.getLatencyMs()
+			log.getPromptCostUsd(),
+			log.getCompletionCostUsd(),
+			log.getReasoningCostUsd(),
+			log.getCachedPromptCostUsd(),
+			log.getTotalCostUsd(),
+			log.getPricingPlanId(),
+			log.getPricingVersion(),
+			log.getSourceType(),
+			log.getMetadataJson(),
+			log.getOccurredAt()
 		);
 	}
 }

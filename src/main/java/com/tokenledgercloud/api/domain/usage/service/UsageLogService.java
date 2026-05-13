@@ -18,36 +18,66 @@ public class UsageLogService {
 
 	@Transactional
 	public UsageLogResponse create(UsageLogCreateRequest request) {
-		return usageLogRepository.findByIdempotencyKey(request.idempotencyKey())
-			.map(UsageLogResponse::from)
-			.orElseGet(() -> UsageLogResponse.from(saveNew(request)));
+		if (request.requestId() != null && !request.requestId().isBlank()) {
+			return usageLogRepository.findByProjectIdAndEnvironmentAndRequestId(
+					request.projectId(),
+					request.environment(),
+					request.requestId()
+				)
+				.map(UsageLogResponse::from)
+				.orElseGet(() -> UsageLogResponse.from(saveNew(request)));
+		}
+		return UsageLogResponse.from(saveNew(request));
 	}
 
 	private UsageLog saveNew(UsageLogCreateRequest request) {
 		Long totalTokens = request.totalTokens() != null
 			? request.totalTokens()
-			: request.inputTokens() + request.outputTokens();
+			: request.promptTokens()
+				+ request.completionTokens()
+				+ safe(request.reasoningTokens())
+				+ safe(request.cachedPromptTokens());
+
+		var totalCostUsd = request.totalCostUsd() != null
+			? request.totalCostUsd()
+			: request.promptCostUsd()
+				.add(request.completionCostUsd())
+				.add(safe(request.reasoningCostUsd()))
+				.add(safe(request.cachedPromptCostUsd()));
 
 		UsageLog usageLog = UsageLog.builder()
-			.eventId(request.eventId())
-			.idempotencyKey(request.idempotencyKey())
+			.organizationId(request.organizationId())
 			.projectId(request.projectId())
-			.applicationId(request.applicationId())
-			.userId(request.userId())
-			.modelId(request.modelId())
-			.inputTokens(request.inputTokens())
-			.outputTokens(request.outputTokens())
+			.apiKeyId(request.apiKeyId())
+			.environment(request.environment())
+			.requestId(request.requestId())
+			.provider(request.provider())
+			.model(request.model())
+			.promptTokens(request.promptTokens())
+			.completionTokens(request.completionTokens())
+			.reasoningTokens(safe(request.reasoningTokens()))
+			.cachedPromptTokens(safe(request.cachedPromptTokens()))
 			.totalTokens(totalTokens)
-			.totalCost(request.totalCost())
-			.currencyCode(request.currencyCode() == null ? "USD" : request.currencyCode())
-			.status(request.status())
-			.startedAt(request.startedAt())
-			.finishedAt(request.finishedAt())
-			.latencyMs(request.latencyMs())
-			.errorCode(request.errorCode())
-			.errorMessage(request.errorMessage())
+			.promptCostUsd(request.promptCostUsd())
+			.completionCostUsd(request.completionCostUsd())
+			.reasoningCostUsd(safe(request.reasoningCostUsd()))
+			.cachedPromptCostUsd(safe(request.cachedPromptCostUsd()))
+			.totalCostUsd(totalCostUsd)
+			.pricingPlanId(request.pricingPlanId())
+			.pricingVersion(request.pricingVersion())
+			.sourceType(request.sourceType())
+			.metadataJson(request.metadataJson())
+			.occurredAt(request.occurredAt())
 			.build();
 
 		return usageLogRepository.save(usageLog);
+	}
+
+	private Long safe(Long value) {
+		return value == null ? 0L : value;
+	}
+
+	private java.math.BigDecimal safe(java.math.BigDecimal value) {
+		return value == null ? java.math.BigDecimal.ZERO : value;
 	}
 }

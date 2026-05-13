@@ -22,7 +22,7 @@ public class DashboardController {
 
 	@GetMapping("/kpi")
 	public ResponseEntity<ApiResponse<DashboardKpiResponse>> kpi(
-		@RequestParam(required = false) Long projectId,
+		@RequestParam(required = false) String projectId,
 		@RequestParam(defaultValue = "today") String period
 	) {
 		return ResponseEntity.ok(ApiResponse.success(dashboardService.getKpi(projectId, period)));
@@ -30,7 +30,7 @@ public class DashboardController {
 
 	@GetMapping("/model-cost-summary")
 	public ResponseEntity<ApiResponse<List<ModelCostSummaryResponse>>> modelCostSummary(
-		@RequestParam(required = false) Long projectId,
+		@RequestParam(required = false) String projectId,
 		@RequestParam(defaultValue = "week") String period
 	) {
 		return ResponseEntity.ok(ApiResponse.success(dashboardService.getModelCostSummary(projectId, period)));

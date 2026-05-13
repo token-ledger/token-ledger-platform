@@ -40,7 +40,7 @@ class MemberControllerTest {
 	@Test
 	void signupReturnsWrappedSuccessResponse() throws Exception {
 		given(memberService.signup(any()))
-			.willReturn(new MemberResponse(1L, "user@test.com", "tester", "USER", "local"));
+			.willReturn(new MemberResponse("user-1", "user@test.com", "tester", "USER", "local"));
 
 		mockMvc().perform(post("/api/members")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -78,7 +78,7 @@ class MemberControllerTest {
 	void meReturnsWrappedSuccessResponse() throws Exception {
 		Authentication authentication = new TestingAuthenticationToken("user@test.com", "password");
 		given(memberService.getCurrentMember(any(Authentication.class)))
-			.willReturn(new MemberResponse(1L, "user@test.com", "tester", "USER", "local"));
+			.willReturn(new MemberResponse("user-1", "user@test.com", "tester", "USER", "local"));
 
 		mockMvc().perform(get("/api/me").principal(authentication))
 			.andExpect(status().isOk())

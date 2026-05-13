@@ -31,7 +31,7 @@ public class MemberService {
 		Member member = Member.builder()
 			.email(request.email())
 			.name(request.name())
-			.password(passwordEncoder.encode(request.password()))
+			.passwordHash(passwordEncoder.encode(request.password()))
 			.role(Role.USER)
 			.provider("local")
 			.providerId(null)
