@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ApiKeyRepository extends JpaRepository<ApiKey, Long> {
-    Optional<ApiKey> findByApiKey(String apiKey);
+    Optional<ApiKey> findByHashedKey(String hashedKey);
+    Optional<ApiKey> findByHashedKeyAndIsActiveTrue(String hashedKey);
     List<ApiKey> findByMemberId(Long memberId);
 }

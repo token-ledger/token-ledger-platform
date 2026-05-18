@@ -1,6 +1,7 @@
 CREATE TABLE api_keys (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    api_key VARCHAR(255) NOT NULL UNIQUE,
+    hashed_key VARCHAR(255) NOT NULL UNIQUE,
+    display_key VARCHAR(255) NOT NULL,
     member_id BIGINT NOT NULL,
     name VARCHAR(255),
     created_at DATETIME NOT NULL,
@@ -10,4 +11,4 @@ CREATE TABLE api_keys (
 );
 
 CREATE INDEX idx_api_keys_member ON api_keys (member_id);
-CREATE INDEX idx_api_keys_value ON api_keys (api_key);
+CREATE INDEX idx_api_keys_hashed ON api_keys (hashed_key);
