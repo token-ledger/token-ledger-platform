@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -105,10 +106,14 @@ public class DashboardService {
 			))
 			.toList();
 
-		var events = operationalEventRepository.findTop20ByOrderByOccurredAtDesc()
+		var events = operationalEventRepository.findEvents(
+				blankToNull(projectId),
+				blankToNull(environment),
+				null,
+				null,
+				PageRequest.of(0, 20)
+			)
 			.stream()
-			.filter(event -> projectId == null || projectId.isBlank() || projectId.equals(event.getProjectId()))
-			.filter(event -> environment == null || environment.isBlank() || environment.equals(event.getEnvironment()))
 			.map(event -> new DashboardOverviewResponse.Event(
 				event.getId(),
 				event.getOccurredAt(),
@@ -173,6 +178,10 @@ public class DashboardService {
 			);
 			default -> throw new InvalidPeriodException();
 		};
+	}
+
+	private String blankToNull(String value) {
+		return value == null || value.isBlank() ? null : value;
 	}
 
 	private record TimeRange(LocalDateTime from, LocalDateTime to) {

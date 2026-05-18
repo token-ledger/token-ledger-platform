@@ -21,6 +21,7 @@ public enum ErrorCode {
 	INVALID_MONTH(HttpStatus.BAD_REQUEST, "BUDGET-400", "Invalid month format."),
 	INVALID_PERIOD_TYPE(HttpStatus.BAD_REQUEST, "BUDGET-401", "Unsupported budget period type."),
 	BUDGET_NOT_FOUND(HttpStatus.NOT_FOUND, "BUDGET-404", "Budget not found."),
+	INVALID_EVENT_TYPE(HttpStatus.BAD_REQUEST, "EVENT-400", "Invalid event type."),
 	INVALID_PERIOD(HttpStatus.BAD_REQUEST, "DASHBOARD-400", "Unsupported period. Use today, week, or month.");
 
 	private final HttpStatus status;

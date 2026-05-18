@@ -1,7 +1,9 @@
 package com.tokenledgercloud.api.domain.event.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,6 +11,8 @@ import com.tokenledgercloud.api.domain.event.dto.OperationalEventItemResponse;
 import com.tokenledgercloud.api.domain.event.dto.OperationalEventListResponse;
 import com.tokenledgercloud.api.domain.event.entity.OperationalEvent;
 import com.tokenledgercloud.api.domain.event.repository.OperationalEventRepository;
+import com.tokenledgercloud.api.global.exception.ApiException;
+import com.tokenledgercloud.api.global.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,24 +30,27 @@ public class OperationalEventService {
 		String cursor,
 		Integer size
 	) {
-		validateType(type);
-
-		List<OperationalEvent> events;
-
-		if (projectId != null && !projectId.isBlank()) {
-			events = operationalEventRepository.findByProjectIdOrderByOccurredAtDesc(projectId);
-		} else if (environment != null && !environment.isBlank()) {
-			events = operationalEventRepository.findByEnvironmentOrderByOccurredAtDesc(environment);
-		} else if (type != null && !type.isBlank()) {
-			events = operationalEventRepository.findByEventTypeOrderByOccurredAtDesc(type);
-		} else {
-			events = operationalEventRepository.findTop20ByOrderByOccurredAtDesc();
-		}
-
+		String normalizedType = normalizeType(type);
 		int limit = size == null ? 20 : Math.min(size, 100);
 
+		LocalDateTime cursorOccurredAt = null;
+
+		if (cursor != null && !cursor.isBlank()) {
+			OperationalEvent cursorEvent = operationalEventRepository.findById(cursor)
+				.orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+
+			cursorOccurredAt = cursorEvent.getOccurredAt();
+		}
+
+		List<OperationalEvent> events = operationalEventRepository.findEvents(
+			blankToNull(projectId),
+			blankToNull(environment),
+			normalizedType,
+			cursorOccurredAt,
+			PageRequest.of(0, limit)
+		);
+
 		List<OperationalEventItemResponse> items = events.stream()
-			.limit(limit)
 			.map(OperationalEventItemResponse::from)
 			.toList();
 
@@ -54,13 +61,23 @@ public class OperationalEventService {
 		return new OperationalEventListResponse(items, nextCursor);
 	}
 
-	private void validateType(String type) {
+	private String normalizeType(String type) {
 		if (type == null || type.isBlank()) {
-			return;
+			return null;
 		}
 
-		if (!type.equals("INFO") && !type.equals("WARNING") && !type.equals("CRITICAL")) {
-			throw new IllegalArgumentException("INVALID_EVENT_TYPE");
+		String normalizedType = type.toUpperCase();
+
+		if (!normalizedType.equals("INFO")
+			&& !normalizedType.equals("WARNING")
+			&& !normalizedType.equals("CRITICAL")) {
+			throw new ApiException(ErrorCode.INVALID_EVENT_TYPE);
 		}
+
+		return normalizedType;
+	}
+
+	private String blankToNull(String value) {
+		return value == null || value.isBlank() ? null : value;
 	}
 }
